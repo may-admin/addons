@@ -1,0 +1,16 @@
+{
+    "name": "may-admin/may-addons",
+    "description": "may-admin/may-addons",
+    "type": "library",
+    "require": {
+        "php": ">=8.0.0"
+    },
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "苏晓信",
+            "email": "654108442@qq.com"
+        }
+    ],
+    "minimum-stability": "dev"
+}
