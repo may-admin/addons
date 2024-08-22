@@ -18,7 +18,5 @@
         "files": [
             "src/helper.php"
         ]
-    },
-    "type": "library",
-    "minimum-stability": "dev"
+    }
 }
