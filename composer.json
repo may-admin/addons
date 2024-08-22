@@ -1,10 +1,6 @@
 {
     "name": "may-admin/may-addons",
     "description": "may-admin/may-addons",
-    "type": "library",
-    "require": {
-        "php": ">=8.0.0"
-    },
     "license": "Apache-2.0",
     "authors": [
         {
@@ -12,5 +8,17 @@
             "email": "654108442@qq.com"
         }
     ],
+    "require": {
+        "php": ">=8.0.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "may\\": "src/"
+        },
+        "files": [
+            "src/helper.php"
+        ]
+    },
+    "type": "library",
     "minimum-stability": "dev"
 }
