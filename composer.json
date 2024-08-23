@@ -13,10 +13,17 @@
     },
     "autoload": {
         "psr-4": {
-            "may\\": "src/"
+            "mayadmin\\addons\\": "src/"
         },
         "files": [
             "src/helper.php"
         ]
+    },
+    "extra": {
+        "think": {
+            "services": [
+                "mayadmin\\addons\\Service"
+            ]
+        }
     }
 }
