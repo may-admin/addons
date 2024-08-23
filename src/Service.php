@@ -53,7 +53,7 @@ class Service extends \think\Service
         if (Config::get('addons.autoload', true)) {
             $config = Config::get('addons');
             // 读取插件目录及钩子列表
-            $base = get_class_methods('\\wym\\addons\\Addons');
+            $base = get_class_methods('\\mayadmin\\addons\\Addons');
             $base = array_merge($base, ['init', 'initialize', 'install', 'uninstall', 'enabled', 'disabled']);
             
             
