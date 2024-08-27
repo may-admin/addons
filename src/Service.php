@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace mayadmin\addons;
 
 use think\facade\Config;
+use think\facade\Lang;
 use think\facade\Log;
 
 class Service extends \think\Service
@@ -15,6 +16,8 @@ class Service extends \think\Service
     {
         // 无则创建addons目录
         $this->addons_path = $this->getAddonsPath();
+        // 加载系统语言包
+        $this->loadLang();
         // 自动载入插件
         $this->autoload();
         
@@ -42,6 +45,19 @@ class Service extends \think\Service
     }
     
     /**
+     * @Description: todo(自动载入插件语言包)
+     * @author 苏晓信 <654108442@qq.com>
+     * @date 2024年08月23日
+     * @throws
+     */
+    private function loadLang()
+    {
+        Lang::load([
+            $this->app->getRootPath() . '/vendor/may-admin/addons/src/lang/zh-cn.php',
+        ]);
+    }
+    
+    /**
      * @Description: todo(自动载入钩子插件)
      * @author 苏晓信 <654108442@qq.com>
      * @date 2024年08月23日
@@ -56,9 +72,7 @@ class Service extends \think\Service
             $base = get_class_methods('\\mayadmin\\addons\\Addons');
             $base = array_merge($base, ['init', 'initialize', 'install', 'uninstall', 'enabled', 'disabled']);
             
-            
             return;
-            
             
             // 读取插件目录中的php文件
             foreach (glob($this->getAddonsPath() . '*/*.php') as $addons_file) {
