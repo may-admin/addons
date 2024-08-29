@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace mayadmin\addons;
 
+use think\Console;
+
 use think\facade\Config;
 use think\facade\Lang;
 use think\facade\Log;
@@ -14,6 +16,8 @@ class Service extends \think\Service
     
     public function register()
     {
+        $this->app->bind('addons', Service::class);
+        
         // 无则创建addons目录
         $this->addons_path = $this->getAddonsPath();
         // 加载系统语言包
@@ -72,6 +76,17 @@ class Service extends \think\Service
             $base = get_class_methods('\\mayadmin\\addons\\Addons');
             $base = array_merge($base, ['init', 'initialize', 'install', 'uninstall', 'enabled', 'disabled']);
             
+            Console::starting(function (Console $console){
+                $console->addCommand('mayadmin\addons\command\App', 'addons:app');
+                $console->addCommand('mayadmin\addons\command\Controller', 'addons:controller');
+                $console->addCommand('mayadmin\addons\command\Model', 'addons:model');
+                $console->addCommand('mayadmin\addons\command\View', 'addons:view');
+                $console->addCommand('mayadmin\addons\command\Validate', 'addons:validate');
+                $console->addCommand('mayadmin\addons\command\Config', 'addons:config');
+                $console->addCommand('mayadmin\addons\command\Lang', 'addons:lang');
+            });
+            
+            //dump($base);
             return;
             
             // 读取插件目录中的php文件

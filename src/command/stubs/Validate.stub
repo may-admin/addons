@@ -1,0 +1,24 @@
+<?php
+declare (strict_types = 1);
+
+namespace {%namespace%};
+
+use think\Validate;
+
+class {%className%} extends Validate
+{
+    /**
+     * 验证规则
+     */
+    protected $rule = [];
+
+    /**
+     * 错误信息
+     */
+    protected $message = [];
+
+    /**
+     * 验证场景
+     */
+    protected $scene = []; 
+}
