@@ -3,10 +3,16 @@ declare (strict_types = 1);
 
 namespace {%namespace%};
 
+use think\facade\View;
+
 class {%className%}
 {
     public function index()
     {
-        return '您好！这是一个[{%namespace%}/{%className%}]示例插件应用';
+        $data = [
+            'html' => '您好！这是一个[{%namespace%} : {%className%}]示例插件应用',
+        ];
+        View::assign('data', $data);
+        return View::fetch();
     }
 }

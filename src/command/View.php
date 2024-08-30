@@ -1,6 +1,8 @@
 <?php
 namespace mayadmin\addons\command;
 
+use think\helper\Str;
+
 class View extends Common
 {
     protected $type = 'View';
@@ -15,6 +17,10 @@ class View extends Common
     protected function getPathName(string $name): string
     {
         $name = str_replace('addons\\', '', $name);
-        return $this->app->addons->getAddonsPath() . ltrim(str_replace('\\', '/', $name), '/') . '.html';
+        $name_arr = explode('\\', $name);
+        $name_arr[count($name_arr)-1] = Str::snake($name_arr[count($name_arr)-1]);
+        $name = implode('/', $name_arr).'/';
+        
+        return $this->app->addons->getAddonsPath() . $name . 'index.html';
     }
 }

@@ -5,7 +5,6 @@ use think\console\command\Make;
 use think\console\Input;
 use think\console\Output;
 use think\facade\Console;
-use think\facade\Log;
 
 class App extends Make
 {

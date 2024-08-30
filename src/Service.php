@@ -3,11 +3,10 @@ declare(strict_types=1);
 
 namespace mayadmin\addons;
 
+use think\Route;
 use think\Console;
-
 use think\facade\Config;
 use think\facade\Lang;
-use think\facade\Log;
 
 class Service extends \think\Service
 {
@@ -17,20 +16,38 @@ class Service extends \think\Service
     public function register()
     {
         $this->app->bind('addons', Service::class);
-        
         // 无则创建addons目录
         $this->addons_path = $this->getAddonsPath();
         // 加载系统语言包
         $this->loadLang();
         // 自动载入插件
         $this->autoload();
-        
-        Log::info('may-addons-Service-register');
     }
     
     public function boot()
     {
-        Log::info('may-addons-Service-boot');
+        $commands = [
+            'addons:app'        => command\App::class,
+            'addons:controller' => command\Controller::class,
+            'addons:model'      => command\Model::class,
+            'addons:view'       => command\View::class,
+            'addons:validate'   => command\Validate::class,
+            'addons:config'     => command\Config::class,
+            'addons:lang'       => command\Lang::class,
+        ];
+        Console::starting(function (Console $console) use ($commands) {
+            foreach($commands as $key => $command){
+                $console->addCommand($command, is_numeric($key) ? '' : $key);
+            }
+        });
+        
+        //注册HttpRun事件监听,触发后注册全局中间件到开始位置
+        $this->registerRoutes(function (Route $route) {
+            // 路由脚本
+            $execute = '\\mayadmin\\addons\\Route::execute';
+            // 注册控制器路由
+            $route->rule('addons/:addon/[:controller]/[:action]', $execute);
+        });
     }
     
     /**
@@ -76,17 +93,6 @@ class Service extends \think\Service
             $base = get_class_methods('\\mayadmin\\addons\\Addons');
             $base = array_merge($base, ['init', 'initialize', 'install', 'uninstall', 'enabled', 'disabled']);
             
-            Console::starting(function (Console $console){
-                $console->addCommand('mayadmin\addons\command\App', 'addons:app');
-                $console->addCommand('mayadmin\addons\command\Controller', 'addons:controller');
-                $console->addCommand('mayadmin\addons\command\Model', 'addons:model');
-                $console->addCommand('mayadmin\addons\command\View', 'addons:view');
-                $console->addCommand('mayadmin\addons\command\Validate', 'addons:validate');
-                $console->addCommand('mayadmin\addons\command\Config', 'addons:config');
-                $console->addCommand('mayadmin\addons\command\Lang', 'addons:lang');
-            });
-            
-            //dump($base);
             return;
             
             // 读取插件目录中的php文件
