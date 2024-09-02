@@ -7,6 +7,7 @@ use think\Route;
 use think\Console;
 use think\facade\Config;
 use think\facade\Lang;
+use think\facade\Log;
 
 class Service extends \think\Service
 {
@@ -15,6 +16,8 @@ class Service extends \think\Service
     
     public function register()
     {
+        Log::info('addons-Service-register');
+        
         $this->app->bind('addons', Service::class);
         // 无则创建addons目录
         $this->addons_path = $this->getAddonsPath();
@@ -26,6 +29,8 @@ class Service extends \think\Service
     
     public function boot()
     {
+        Log::info('addons-Service-boot');
+        
         $commands = [
             'addons:app'        => command\App::class,
             'addons:controller' => command\Controller::class,
