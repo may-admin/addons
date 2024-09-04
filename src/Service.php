@@ -5,14 +5,22 @@ namespace mayadmin\addons;
 
 use think\Route;
 use think\Console;
+use think\helper\Str;
 use think\facade\Config;
 use think\facade\Lang;
+use think\facade\Cache;
 use think\facade\Log;
 
 class Service extends \think\Service
 {
     // addons 路径
     protected $addons_path;
+    //存放[插件名称]列表数据
+    protected array $addons_data = [];
+    //存放[插件ini所有信息]列表数据
+    protected array $addons_data_list = [];
+    //模块所有[config.php]里的信息存放
+    protected array $addons_data_list_config = [];
     
     public function register()
     {
@@ -39,6 +47,7 @@ class Service extends \think\Service
             'addons:validate'   => command\Validate::class,
             'addons:config'     => command\Config::class,
             'addons:lang'       => command\Lang::class,
+            'addons:plugin'     => command\Plugin::class,
         ];
         Console::starting(function (Console $console) use ($commands) {
             foreach($commands as $key => $command){
@@ -97,9 +106,6 @@ class Service extends \think\Service
             // 读取插件目录及钩子列表
             $base = get_class_methods('\\mayadmin\\addons\\Addons');
             $base = array_merge($base, ['init', 'initialize', 'install', 'uninstall', 'enabled', 'disabled']);
-            
-            return;
-            
             // 读取插件目录中的php文件
             foreach (glob($this->getAddonsPath() . '*/*.php') as $addons_file) {
                 // 格式化路径信息
@@ -108,34 +114,37 @@ class Service extends \think\Service
                 $name = pathinfo($info['dirname'], PATHINFO_FILENAME);
                 // 找到插件入口文件
                 if (Str::lower($info['filename']) === 'plugin') {
-                    // 读取出所有公共方法
+                    // 读取出所有公共方法[addons\插件名\Plugin.php]文件
                     if (!class_exists('\\addons\\' . $name . '\\' . $info['filename'])) {
                         continue;
                     }
                     $methods = get_class_methods('\\addons\\' . $name . '\\' . $info['filename']);
-                    $ini     = $info['dirname'] . DS . 'plugin.ini';
-
+                    // 读取出信息[addons\插件名\plugin.ini]
+                    $ini = $info['dirname'] . DIRECTORY_SEPARATOR . 'plugin.ini';
                     if (!is_file($ini)) {
                         continue;
                     }
-                    $addon_config = parse_ini_file($ini, true, INI_SCANNER_TYPED) ?: [];
-
-                    $this->addons_data[]                                  = $addon_config['name'];
-                    $this->addons_data_list[$addon_config['name']]        = $addon_config;
-                    $this->addons_data_list_config[$addon_config['name']] = include $this->getAddonsPath() . $addon_config['name'] . '/config.php';
-                    // 跟插件基类方法做比对，得到差异结果
-                    setAddonConfig($config, $methods, $base, $name);
+                    $addon_config = parse_ini_file($ini, true, INI_SCANNER_TYPED) ? : [];
+                    if(isset($addon_config['name']) && !empty($addon_config['name'])){
+                        $this->addons_data[]                                  = $addon_config['name'];
+                        $this->addons_data_list[$addon_config['name']]        = $addon_config;
+                        if (file_exists($this->getAddonsPath() . $name . '/config.php')) {
+                            $this->addons_data_list_config[$addon_config['name']] = include $this->getAddonsPath() . $name . '/config.php';
+                        }
+                    }
+                    // // 跟插件基类方法做比对，得到差异结果
+                    // setAddonConfig($config, $methods, $base, $name);
                 }
             }
             //插件配置信息保存到缓存
-            Cache::set('addons_config', $config);
+            // Cache::set('addons_config', $config);
             //插件列表
             Cache::set('addons_data', $this->addons_data);
             //插件ini列表
             Cache::set('addons_data_list', $this->addons_data_list);
             //插件config列表
             Cache::set('addons_data_list_config', $this->addons_data_list_config);
-            Config::set($config, 'addons');
+            // Config::set($config, 'addons');
         }
     }
 }

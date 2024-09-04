@@ -32,6 +32,7 @@ class App extends Make
         Console::call('addons:validate', [$name]);
         Console::call('addons:config', [$name]);
         Console::call('addons:lang', [$name]);
+        Console::call('addons:plugin', [$name]);
         
         $output->writeln('<info>plugin created successfully.</info>');
     }

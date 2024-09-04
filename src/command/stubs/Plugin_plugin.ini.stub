@@ -1,0 +1,7 @@
+name = {%name%}_name
+title = {%name%}_title
+description = {%name%}_description
+author = {%name%}_author
+website = {%name%}_website
+version = 1.0.0
+status = -1
